@@ -1,4 +1,6 @@
+import 'package:apotek_flutter/model/obat.dart';
 import 'package:apotek_flutter/ui/detail_obat.dart';
+import 'package:apotek_flutter/ui/tambah_obat.dart';
 import 'package:flutter/material.dart';
 
 class ListObat extends StatefulWidget {
@@ -13,8 +15,17 @@ class _ListObatState extends State<ListObat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Obat', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.purpleAccent,
+        title: Text('Daftar Obat'),
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObat()));
+        },
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        child: Icon(Icons.add),
       ),
       body: Column(
         children: [
@@ -33,9 +44,11 @@ class _ListObatState extends State<ListObat> {
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () {
+                    final obat = Obat('Panadol', 14000, 15, null);
+
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DetailObat()),
+                      MaterialPageRoute(builder: (context) => DetailObat(obat: obat,)),
                     );
                   },
                   leading: Image.asset('assets/medicine.jpg'),
