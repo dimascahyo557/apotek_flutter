@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:apotek_flutter/model/obat.dart';
+import 'package:apotek_flutter/variables.dart';
+import 'package:apotek_flutter/widget/my_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,6 +19,8 @@ class _TambahObatState extends State<TambahObat> {
   final TextEditingController namaController = TextEditingController();
   final TextEditingController hargaController = TextEditingController();
   final TextEditingController stokController = TextEditingController();
+  final TextEditingController satuanController = TextEditingController();
+  final TextEditingController deskripsiController = TextEditingController();
 
   File? _image;
 
@@ -32,10 +37,30 @@ class _TambahObatState extends State<TambahObat> {
 
   void _simpanObat() {
     if (_formKey.currentState!.validate()) {
-      // Di sini kamu bisa simpan data ke database lokal (misalnya sqflite)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data obat berhasil disimpan')),
+      final obat = Obat(
+        nama: namaController.text,
+        harga: int.parse(hargaController.text),
+        stok: int.parse(stokController.text),
+        satuan: satuanController.text,
+        deskripsi: deskripsiController.text,
+        // TODO: simpan foto
       );
+
+      // TODO: simpan data ke database
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Data obat berhasil disimpan',
+            style: TextStyle(
+              color: Colors.black87,
+            ),
+          ),
+          backgroundColor: Variables.colorSuccess,
+        ),
+      );
+
+      Navigator.pop(context);
     }
   }
 
@@ -43,8 +68,8 @@ class _TambahObatState extends State<TambahObat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Obat'),
-        backgroundColor: Colors.teal,
+        title: Text('Tambah Obat', style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Variables.colorSecondary,
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -53,94 +78,132 @@ class _TambahObatState extends State<TambahObat> {
           key: _formKey,
           child: ListView(
             children: [
-              // Input Nama Obat
-              TextFormField(
-                controller: namaController,
-                decoration: const InputDecoration(
-                  labelText: 'Nama Obat',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Nama obat tidak boleh kosong' : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Input Harga Obat
-              TextFormField(
-                controller: hargaController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Harga Obat (Rp)',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Harga obat harus diisi' : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Input Stok Awal
-              TextFormField(
-                controller: stokController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Stok Awal',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Stok awal harus diisi' : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Upload Foto Obat
-              Center(
-                child: Column(
-                  children: [
-                    _image == null
-                        ? Container(
-                            width: 120,
-                            height: 120,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.image, size: 50, color: Colors.grey),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              _image!,
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                    const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.photo),
-                      label: const Text('Pilih Foto Obat'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
+              Column(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _image == null
+                      ? Icon(Icons.image, size: 50, color: Colors.grey)
+                      : Image.file(
+                        _image!,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Variables.colorAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                  ],
-                ),
+                    child: Text(
+                      'Pilih Foto',
+                      style: TextStyle(
+                        color: Variables.colorPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
 
+              MyTextFormField(
+                labelText: 'Nama obat',
+                controller: namaController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Nama obat tidak boleh kosong';
+                  } else {
+                    return null;
+                  }
+                }
+              ),
+              const SizedBox(height: 16),
+
+              MyTextFormField(
+                labelText: 'Harga obat',
+                controller: hargaController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Harga obat tidak boleh kosong';
+                  }
+                  else if (int.tryParse(value) == null) {
+                    return 'Harga obat harus berupa angka';
+                  }
+                  else {
+                    return null;
+                  }
+                }
+              ),
+              const SizedBox(height: 16),
+
+              MyTextFormField(
+                labelText: 'Stok awal',
+                controller: stokController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Stok awal tidak boleh kosong';
+                  }
+                  else if (int.tryParse(value) == null) {
+                    return 'Stok awal harus berupa angka';
+                  }
+                  else {
+                    return null;
+                  }
+                }
+              ),
+              const SizedBox(height: 16),
+
+              MyTextFormField(
+                labelText: 'Satuan',
+                controller: satuanController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Satuan tidak boleh kosong';
+                  }
+                  else {
+                    return null;
+                  }
+                }
+              ),
+              const SizedBox(height: 16),
+
+              MyTextFormField(
+                labelText: 'Deskripsi',
+                controller: deskripsiController,
+                minLines: 3,
+                maxLines: 5,
+              ),
+              const SizedBox(height: 16),
+
               // Tombol Simpan
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: _simpanObat,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Simpan'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    foregroundColor: Colors.white,
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ElevatedButton(
+                onPressed: _simpanObat,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 13),
+                  backgroundColor: Variables.colorSecondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: Text(
+                  'Simpan',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
               ),

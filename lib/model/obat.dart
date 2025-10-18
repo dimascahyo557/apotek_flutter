@@ -1,8 +1,17 @@
 class Obat {
   String nama;
-  double harga;
+  int harga;
   int stok;
+  String satuan;
+  String? deskripsi;
   String? foto;
 
-  Obat(this.nama, this.harga, this.stok, this.foto);
+  Obat({
+    required this.nama,
+    required this.harga,
+    required this.stok,
+    required this.satuan,
+    this.deskripsi,
+    this.foto,
+  });
 }
