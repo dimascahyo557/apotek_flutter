@@ -1,4 +1,4 @@
-import 'package:apotek_flutter/ui/list_obat.dart';
+import 'package:apotek_flutter/ui/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,8 +15,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         fontFamily: 'Nunito',
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Color(0xFF444444)),
+          bodyMedium: TextStyle(color: Color(0xFF444444)),
+          bodySmall: TextStyle(color: Color(0xFF444444)),
+        ),
       ),
-      home: const ListObat(),
+      home: const SplashScreen(),
     );
   }
 }

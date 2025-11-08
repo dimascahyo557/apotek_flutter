@@ -7,6 +7,8 @@ class MyTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final int? minLines;
   final int? maxLines;
+  final TextInputType? keyboardType;
+  final bool obscureText;
 
   const MyTextFormField({
     super.key,
@@ -15,6 +17,8 @@ class MyTextFormField extends StatefulWidget {
     this.validator,
     this.minLines,
     this.maxLines = 1,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
   });
 
   @override
@@ -28,6 +32,8 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
       controller: widget.controller,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.obscureText,
       decoration: InputDecoration(
         labelText: widget.labelText,
         labelStyle: TextStyle(
