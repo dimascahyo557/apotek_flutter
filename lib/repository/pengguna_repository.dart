@@ -1,0 +1,42 @@
+import 'package:apotek_flutter/helper/database_helper.dart';
+import 'package:apotek_flutter/model/models.dart';
+
+class PenggunaRepository {
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  Future<int> insertPengguna(Pengguna p) async {
+    final db = await _dbHelper.database;
+    final map = {
+      'nama': p.nama,
+      'email': p.email,
+      'password': p.password,
+      'role': p.role,
+    };
+    return await db.insert('pengguna', map);
+  }
+
+  Future<Pengguna?> getPenggunaByEmail(String email) async {
+    final db = await _dbHelper.database;
+    final rows = await db.query('pengguna', where: 'email = ?', whereArgs: [email]);
+    if (rows.isEmpty) return null;
+    final r = rows.first;
+    return Pengguna(
+      id: r['id'] as int?,
+      nama: r['nama'] as String,
+      email: r['email'] as String,
+      password: r['password'] as String,
+      role: r['role'] as String?,
+    );
+  }
+
+  Future<int> updatePengguna(int id, Pengguna p) async {
+    final db = await _dbHelper.database;
+    final map = {
+      'nama': p.nama,
+      'email': p.email,
+      'password': p.password,
+      'role': p.role,
+    };
+    return await db.update('pengguna', map, where: 'id = ?', whereArgs: [id]);
+  }
+}

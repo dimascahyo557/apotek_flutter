@@ -1,16 +1,18 @@
 class Obat {
-  String nama;
-  int harga;
-  int stok;
-  String satuan;
-  String? deskripsi;
-  String? foto;
+  final int? id;
+  final String nama;
+  final int harga;
+  final int stok;
+  final String? satuan;
+  final String? deskripsi;
+  final String? foto;
 
   Obat({
+    this.id,
     required this.nama,
     required this.harga,
     required this.stok,
-    required this.satuan,
+    this.satuan,
     this.deskripsi,
     this.foto,
   });
