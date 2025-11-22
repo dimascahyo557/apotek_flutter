@@ -11,10 +11,10 @@ class TambahObatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Variables.colorSecondary,
+        foregroundColor: Colors.white,
         title: const Text(
           'Tambah Obat',
           style: TextStyle(
-            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -55,7 +55,7 @@ class TambahObatScreen extends StatelessWidget {
                         onPressed: () {},
                         child: const Text(
                           'Pilih Foto',
-                          style: TextStyle(color:  Color(0xFF8C00FF),
+                          style: TextStyle(color:  Variables.colorSecondary,
                           fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -105,7 +105,7 @@ class TambahObatScreen extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8C00FF),
+                      backgroundColor: Variables.colorSecondary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),

@@ -1,8 +1,7 @@
-import 'package:apotek_flutter/helpers.dart';
-import 'package:apotek_flutter/model/obat.dart';
-import 'package:apotek_flutter/ui/detail_obat.dart';
-import 'package:apotek_flutter/ui/tambah_obat.dart';
+import 'package:apotek_flutter/ui/detail_obat_screen.dart';
+import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
 import 'package:apotek_flutter/variables.dart';
+import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
 
 class ListObat extends StatefulWidget {
@@ -23,7 +22,7 @@ class _ListObatState extends State<ListObat> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObat()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
         },
         backgroundColor: Variables.colorSecondary,
         foregroundColor: Colors.white,
@@ -64,44 +63,13 @@ class _ListObatState extends State<ListObat> {
               child: ListView.builder(
                 itemCount: 15,
                 itemBuilder: (context, index) {
-                  final obat = Obat(
-                    nama: 'Panadol Biru',
-                    harga: 14500,
-                    stok: 15,
-                    satuan: 'Strip',
-                    deskripsi: 'Ini obat pusing',
-                    // foto: 'assets/medicine.jpg',
-                  );
-
-                  return Card(
-                    color: Variables.colorCardGray,
-                    clipBehavior: Clip.antiAlias,
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObat(obat: obat)));
-                      },
-                      title: Text(
-                        obat.nama,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      subtitle: Text(
-                        Helpers.formatHarga(obat.harga),
-                        style: TextStyle(
-                          color: Variables.colorMuted,
-                          fontSize: 14,
-                        ),
-                      ),
-                      trailing: Text(
-                        'Stok: ${obat.stok}',
-                        style: TextStyle(
-                          color: Variables.colorMuted,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
+                  return MyListItem(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen()));
+                    },
+                    title: 'Panadol Biru',
+                    subtitle: 'RP 14.500',
+                    trailing: 'Stok: 15',
                   );
                 },
               )

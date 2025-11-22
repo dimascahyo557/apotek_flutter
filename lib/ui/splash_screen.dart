@@ -1,4 +1,6 @@
 import 'package:apotek_flutter/ui/detail_obat_screen.dart';
+import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
+import 'package:apotek_flutter/ui/list_obat.dart';
 import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
 import 'package:apotek_flutter/ui/tambah_pengguna_page.dart';
@@ -65,7 +67,11 @@ class _SplashScreenState extends State<SplashScreen> {
     // final nextPage = TambahPenggunaPage();
 
     // final nextPage = TambahObatScreen();
-    final nextPage = UbahObatScreen();
+    // final nextPage = UbahObatScreen();
+
+    // final nextPage = DetailPenjualanPage();
+
+    final nextPage = ListObat();
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
