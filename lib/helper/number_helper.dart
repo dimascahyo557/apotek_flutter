@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class Helpers {
+class NumberHelper {
   static String formatHarga(int harga) {
     return NumberFormat.currency(
       locale: 'id_ID',
