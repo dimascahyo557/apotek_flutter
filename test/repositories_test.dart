@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as p;
@@ -18,6 +19,8 @@ void main() {
     databaseFactory = databaseFactoryFfi;
   });
 
+  Directory tempBaseDir;
+
   late DatabaseHelper dbHelper;
   late ObatRepository obatRepo;
   late RiwayatStokRepository riwayatRepo;
@@ -25,6 +28,8 @@ void main() {
   late PenggunaRepository penggunaRepo;
 
   setUp(() async {
+    tempBaseDir = await Directory.systemTemp.createTemp('apotek_test_');
+
     // create fresh database for each test by deleting existing DB file (if any)
     final dbPath = await databaseFactory.getDatabasesPath();
     final testDbPath = p.join(dbPath, 'apotek.db');
@@ -39,7 +44,7 @@ void main() {
     await dbHelper.initDB(); // ensure DB & tables exist
 
     // instantiate repos
-    obatRepo = ObatRepository();
+    obatRepo = ObatRepository(baseDir: tempBaseDir);
     riwayatRepo = RiwayatStokRepository();
     penjualanRepo = PenjualanRepository();
     penggunaRepo = PenggunaRepository();
@@ -50,7 +55,7 @@ void main() {
     await dbHelper.close();
   });
 
-  test('ObatRepository: insert, getAll, getById, update, delete', () async {
+  test('ObatRepository: insert, getAll, getAll with search, getById, update, delete', () async {
     final obat = Obat(
       nama: 'Paracetamol',
       harga: 15000,
@@ -60,13 +65,25 @@ void main() {
       foto: null,
     );
 
+    // insert
     final id = await obatRepo.insertObat(obat);
     expect(id, greaterThan(0));
 
+    // get all tanpa search
     final all = await obatRepo.getAllObat();
     expect(all.length, equals(1));
     expect(all.first.nama, equals('Paracetamol'));
 
+    // get all dengan search (harus menemukan)
+    final searchHit = await obatRepo.getAllObat(search: 'para'); // partial, case-insensitive expectation
+    expect(searchHit.length, equals(1));
+    expect(searchHit.first.nama, equals('Paracetamol'));
+
+    // get all dengan search yang tidak ada (harus kosong)
+    final searchMiss = await obatRepo.getAllObat(search: 'ibuprofen');
+    expect(searchMiss, isEmpty);
+
+    // get by id
     final byId = await obatRepo.getObatById(id);
     expect(byId, isNotNull);
     expect(byId!.harga, equals(15000));
@@ -92,6 +109,31 @@ void main() {
     expect(deleted, equals(1));
     final afterDelete = await obatRepo.getAllObat();
     expect(afterDelete, isEmpty);
+  });
+
+  test('insert/get with foto using injected baseDir', () async {
+    final tmp = File(p.join(Directory.systemTemp.path, 'dummy.png'));
+    await tmp.writeAsBytes(Uint8List.fromList(List<int>.generate(10, (i) => i)));
+
+    final obat = Obat(
+      nama: 'Tst',
+      harga: 1000,
+      stok: 5,
+      satuan: 'pcs',
+      deskripsi: 'd',
+      foto: tmp,
+    );
+
+    final id = await obatRepo.insertObat(obat);
+    expect(id, greaterThan(0));
+
+    final fetched = await obatRepo.getObatById(id);
+    expect(fetched, isNotNull);
+    expect(fetched!.foto, isNotNull);
+    expect((fetched.foto as File).existsSync(), isTrue);
+
+    // cleanup temporary source
+    if (await tmp.exists()) await tmp.delete();
   });
 
   test('RiwayatStokRepository: insert and fetch', () async {
@@ -145,6 +187,75 @@ void main() {
     expect(itemsSaved.map((e) => e.idObat).toSet(), containsAll({id1, id2}));
   });
 
+  test('PenjualanRepository: filter by startDate and endDate', () async {
+    // Insert obat
+    final idA = await obatRepo.insertObat(Obat(nama: 'Obat Filter A', harga: 10000, stok: 10));
+    final idB = await obatRepo.insertObat(Obat(nama: 'Obat Filter B', harga: 20000, stok: 10));
+
+    // Helper function untuk membuat transaksi dengan tanggal custom
+    Future<int> createSale(DateTime date) async {
+      final items = [
+        ItemPenjualan(idObat: idA, jumlahPembelian: 1, hargaSatuan: 10000, totalHarga: 10000),
+      ];
+
+      // Jalankan penjualan
+      final id = await penjualanRepo.jualObat(
+        idKasir: 1,
+        items: items,
+        jumlahBayar: 10000,
+      );
+
+      // Update tanggal transaksi secara langsung supaya bisa diuji
+      final db = await dbHelper.database;
+      await db.update(
+        'penjualan',
+        {'tanggal_transaksi': date.toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      return id;
+    }
+
+    // Buat 3 transaksi pada tanggal yang berbeda
+    final idT1 = await createSale(DateTime(2025, 1, 1, 10, 0, 0));
+    final idT2 = await createSale(DateTime(2025, 1, 5, 12, 0, 0));
+    final idT3 = await createSale(DateTime(2025, 1, 10, 18, 0, 0));
+
+    // -------------------------------
+    // 1) Filter: startDate saja (>= 5 Jan 2025)
+    // -------------------------------
+    final startOnly = await penjualanRepo.getAllPenjualan(
+      startDate: DateTime(2025, 1, 5),
+    );
+
+    expect(startOnly.length, equals(2));
+    final idsStartOnly = startOnly.map((e) => e.id).toSet();
+    expect(idsStartOnly, containsAll([idT2, idT3]));
+
+    // -------------------------------
+    // 2) Filter: endDate saja (<= 5 Jan 2025)
+    // -------------------------------
+    final endOnly = await penjualanRepo.getAllPenjualan(
+      endDate: DateTime(2025, 1, 5, 23, 59, 59),
+    );
+
+    expect(endOnly.length, equals(2));
+    final idsEndOnly = endOnly.map((e) => e.id).toSet();
+    expect(idsEndOnly, containsAll([idT1, idT2]));
+
+    // -------------------------------
+    // 3) Filter range: 2 Jan → 9 Jan
+    // -------------------------------
+    final range = await penjualanRepo.getAllPenjualan(
+      startDate: DateTime(2025, 1, 2),
+      endDate: DateTime(2025, 1, 9, 23, 59, 59),
+    );
+
+    expect(range.length, equals(1));
+    expect(range.first.id, equals(idT2)); // hanya transaksi tanggal 5 Jan
+  });
+
   test('PenjualanRepository: jualObat fails when stock insufficient (transaction rollback)', () async {
     final id1 = await obatRepo.insertObat(Obat(nama: 'ObatX', harga: 10000, stok: 1));
     final items = [
@@ -168,13 +279,81 @@ void main() {
     expect(penjualanList, isEmpty);
   });
 
-  test('PenggunaRepository: insert and get by email', () async {
-    final p = Pengguna(id: null, nama: 'Admin', email: 'admin@x.com', password: 'hashedpw', role: 'admin');
-    final id = await penggunaRepo.insertPengguna(p);
-    expect(id, greaterThan(0));
+  test('PenggunaRepository: insert, getById, getByEmail, update, search, getAll, delete', () async {
+    // Insert pertama
+    final p1 = Pengguna(
+      nama: 'Dimas Cahyo',
+      email: 'dimas@example.com',
+      password: '123456',
+      role: 'admin',
+    );
 
-    final found = await penggunaRepo.getPenggunaByEmail('admin@x.com');
-    expect(found, isNotNull);
-    expect(found!.nama, equals('Admin'));
+    final id1 = await penggunaRepo.insertPengguna(p1);
+    expect(id1, greaterThan(0));
+
+    // Insert kedua
+    final p2 = Pengguna(
+      nama: 'Ayu Lestari',
+      email: 'ayu@example.com',
+      password: 'abcdef',
+      role: 'kasir',
+    );
+
+    final id2 = await penggunaRepo.insertPengguna(p2);
+    expect(id2, greaterThan(id1));
+
+    // ---- getPenggunaById ----
+    final byId = await penggunaRepo.getPenggunaById(id1);
+    expect(byId, isNotNull);
+    expect(byId!.nama, equals('Dimas Cahyo'));
+
+    // ---- getPenggunaByEmail ----
+    final byEmail = await penggunaRepo.getPenggunaByEmail('ayu@example.com');
+    expect(byEmail, isNotNull);
+    expect(byEmail!.nama, equals('Ayu Lestari'));
+
+    // ---- getAllPengguna tanpa search ----
+    final all = await penggunaRepo.getAllPengguna();
+    expect(all.length, equals(2));
+
+    // ---- getAllPengguna dengan search ----
+    final search1 = await penggunaRepo.getAllPengguna(search: 'dimas');
+    expect(search1.length, equals(1));
+    expect(search1.first.email, equals('dimas@example.com'));
+
+    final search2 = await penggunaRepo.getAllPengguna(search: 'example.com');
+    expect(search2.length, equals(2)); // keduanya match
+
+    final searchMiss = await penggunaRepo.getAllPengguna(search: 'tidakadadata');
+    expect(searchMiss, isEmpty);
+
+    // ---- getAllPengguna dengan limit ----
+    final limited = await penggunaRepo.getAllPengguna(limit: 1);
+    expect(limited.length, equals(1));
+
+    // ---- updatePengguna ----
+    final updateData = Pengguna(
+      id: id1,
+      nama: 'Dimas Updated',
+      email: 'dimas@example.com',
+      password: 'newpass',
+      role: 'admin',
+    );
+
+    final updateCount = await penggunaRepo.updatePengguna(id1, updateData);
+    expect(updateCount, equals(1));
+
+    final afterUpdate = await penggunaRepo.getPenggunaById(id1);
+    expect(afterUpdate!.nama, equals('Dimas Updated'));
+
+    // ---- deletePengguna ----
+    final deleteCount = await penggunaRepo.deletePengguna(id2);
+    expect(deleteCount, equals(1));
+
+    final afterDelete = await penggunaRepo.getPenggunaById(id2);
+    expect(afterDelete, isNull);
+
+    final allAfterDelete = await penggunaRepo.getAllPengguna();
+    expect(allAfterDelete.length, equals(1));
   });
 }

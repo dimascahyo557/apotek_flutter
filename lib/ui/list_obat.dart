@@ -70,7 +70,7 @@ class _ListObatState extends State<ListObat> {
                     stok: 15,
                     satuan: 'Strip',
                     deskripsi: 'Ini obat pusing',
-                    foto: 'assets/medicine.jpg',
+                    // foto: 'assets/medicine.jpg',
                   );
 
                   return Card(

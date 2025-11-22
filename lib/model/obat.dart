@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class Obat {
   final int? id;
   final String nama;
@@ -5,7 +7,8 @@ class Obat {
   final int stok;
   final String? satuan;
   final String? deskripsi;
-  final String? foto;
+
+  final File? foto;
 
   Obat({
     this.id,
