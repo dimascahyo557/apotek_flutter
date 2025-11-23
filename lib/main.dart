@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Obatin App',
       theme: ThemeData(
         fontFamily: 'Nunito',
         textTheme: const TextTheme(
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           bodySmall: TextStyle(color: Color(0xFF444444)),
         ),
       ),
-      home: ListObat(),
+      home: const SplashScreen(),
     );
   }
 }

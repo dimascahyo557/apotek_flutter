@@ -1,3 +1,4 @@
+import 'package:apotek_flutter/ui/home.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/app_text_button.dart';
 import 'package:apotek_flutter/widget/my_text_form_field.dart';
@@ -30,7 +31,13 @@ class _LoginState extends State<Login> {
   }
 
   void _doLogin() {
-    // TODO: implement login action
+    if (_formKey.currentState?.validate() ?? false) {
+      // TODO: implement login action
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => Home())
+      );
+    }
   }
 
   double _minValue(double a, double b) => a < b ? a : b;

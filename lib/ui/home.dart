@@ -1,0 +1,173 @@
+import 'package:apotek_flutter/helper/date_helper.dart';
+import 'package:apotek_flutter/helper/number_helper.dart';
+import 'package:apotek_flutter/model/models.dart';
+import 'package:apotek_flutter/repository/obat_repository.dart';
+import 'package:apotek_flutter/repository/penjualan_repository.dart';
+import 'package:apotek_flutter/variables.dart';
+import 'package:apotek_flutter/widget/my_list_item.dart';
+import 'package:flutter/material.dart';
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final penjualanRepo = PenjualanRepository();
+
+  List<Map<String, dynamic>> listPenjualan = [];
+
+  void ambilData() async {
+    DateTime now = DateTime.now();
+    DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
+
+    final penjualan = await penjualanRepo.getAllPenjualan(startDate: startOfDay);
+    for (final penj in penjualan) {
+      listPenjualan.add({
+        'penjualan': penj,
+        'item': await penjualanRepo.getItemsByPenjualan(penj.id!),
+      });
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    ambilData();
+    super.initState();
+  }
+
+  int _countTodayMedicineSale() {
+    return listPenjualan.fold(0, (sum, mapPenjualan) {
+      return sum + _countJumlahPembelian(mapPenjualan['item']);
+    });
+  }
+
+  int _countJumlahPembelian(List<ItemPenjualan> itemPenjualan) {
+    return itemPenjualan.fold(0, (itemSum, item) => itemSum + item.jumlahPembelian);
+  }
+
+  int _countTodayIncome() {
+    final totalIncome = listPenjualan.fold(0, (sum, mapPenjualan) => sum + mapPenjualan['penjualan'].totalHarga as int);
+    return totalIncome;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Obatin App', style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Variables.colorPrimary,
+        foregroundColor: Colors.white,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
+        },
+        backgroundColor: Variables.colorPrimary,
+        foregroundColor: Colors.white,
+        child: Icon(Icons.add_shopping_cart, size: 35,),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Selamat datang',
+              style: TextStyle(
+                color: Variables.colorMuted,
+                fontSize: 16,
+              ),
+            ),
+            Text(
+              'Dimas Cahyo Nugroho',
+              style: TextStyle(
+                color: Variables.colorPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+              ),
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                _summaryCard(title: 'Obat terjual hari ini', value: _countTodayMedicineSale().toString()),
+                _summaryCard(title: 'Pendapatan hari ini', value: NumberHelper.formatHarga(_countTodayIncome())),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Penjualan hari ini',
+              style: TextStyle(
+                color: Variables.colorPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: listPenjualan.isEmpty ? 1 : listPenjualan.length,
+                itemBuilder: (context, index) {
+                  // if emtpy list
+                  if (listPenjualan.isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 30),
+                      child: Text(
+                        'Belum ada penjualan',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Variables.colorMuted,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final penjualan = listPenjualan[index]['penjualan'];
+                  final itemPenjualan = listPenjualan[index]['item'];
+
+                  return MyListItem(
+                    onTap: () {
+                      // Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
+                    },
+                    title: NumberHelper.formatHarga(penjualan.totalHarga),
+                    subtitle: "${_countJumlahPembelian(itemPenjualan)} jenis obat",
+                    trailing: DateHelper.formatTanggal(penjualan.tanggalTransaksi),
+                  );
+                },
+
+              )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Expanded _summaryCard({required String title, String? value}) {
+    return Expanded(
+      child: Card(
+        color: Variables.colorAccent,
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title),
+              Text(
+                value ?? '-',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 21,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

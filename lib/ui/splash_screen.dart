@@ -1,11 +1,4 @@
-import 'package:apotek_flutter/ui/detail_obat_screen.dart';
-import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
-import 'package:apotek_flutter/ui/list_obat.dart';
 import 'package:apotek_flutter/ui/login.dart';
-import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
-import 'package:apotek_flutter/ui/tambah_pengguna_page.dart';
-import 'package:apotek_flutter/ui/ubah_obat_screen.dart';
-import 'package:apotek_flutter/ui/ubah_pengguna_page.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/angular_loading.dart';
 import 'package:flutter/material.dart';
@@ -56,22 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _changePage() {
-    // final nextPage = EditUserPage(userData: {
-    //   'nama': 'nama',
-    //   'email': 'email',
-    //   'role': 'Admin',
-    // },);
-    // final nextPage = UserFormPage(title: 'Tambah Pengguna',);
-
-    // final nextPage = UbahPenggunaPage(namaAwal: 'nama awal', emailAwal: 'emailAwal', roleAwal: 'Admin',);
-    // final nextPage = TambahPenggunaPage();
-
-    // final nextPage = TambahObatScreen();
-    // final nextPage = UbahObatScreen();
-
-    // final nextPage = DetailPenjualanPage();
-
-    final nextPage = ListObat();
+    final nextPage = Login();
 
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
