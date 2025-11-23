@@ -1,5 +1,7 @@
 import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/models.dart';
+import 'package:apotek_flutter/repository/obat_repository.dart';
+import 'package:apotek_flutter/ui/manajemen_stok.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
 
@@ -7,10 +9,32 @@ const Color primaryColor = Variables.colorSecondary; // Ungu sesuai Figma (#8C00
 const Color stockManagementColor = Variables.colorPrimary; // Ungu Tua untuk Manajemen Stok (#450693)
 const Color detailTextColor = Variables.colorMuted; // Abu-abu gelap (#888888)
 
-class DetailObatScreen extends StatelessWidget {
+class DetailObatScreen extends StatefulWidget {
   final Obat obat;
 
   const DetailObatScreen({super.key, required this.obat});
+
+  @override
+  State<DetailObatScreen> createState() => _DetailObatScreenState();
+}
+
+class _DetailObatScreenState extends State<DetailObatScreen> {
+  final obatRepo = ObatRepository();
+  late Obat obat;
+
+  @override
+  void initState() {
+    obat = widget.obat;
+    ambilData();
+    super.initState();
+  }
+
+  Future<void> ambilData() async {
+    final result = await obatRepo.getObatById(widget.obat.id!);
+    setState(() {
+      obat = result!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,8 +219,9 @@ class DetailObatScreen extends StatelessWidget {
           const SizedBox(height: 10),
 
           ElevatedButton(
-            onPressed: () {
-              /* ... */
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ManajemenStok(obat: obat)));
+              ambilData();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: stockManagementColor,

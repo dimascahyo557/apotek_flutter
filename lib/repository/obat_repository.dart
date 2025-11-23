@@ -180,4 +180,30 @@ class ObatRepository {
 
     return newStock;
   }
+
+  // ---------------------------------------------------------------------
+  // STOK HELPERS
+  // ---------------------------------------------------------------------
+  Future<int> increaseStockTx(Transaction txn, int idObat, int qty) async {
+    final rows = await txn.query(
+      'obat',
+      columns: ['stok'],
+      where: 'id = ?',
+      whereArgs: [idObat],
+    );
+
+    if (rows.isEmpty) throw Exception('Obat tidak ditemukan');
+
+    final current = (rows.first['stok'] as num).toInt();
+    final newStock = current + qty;
+
+    await txn.update(
+      'obat',
+      {'stok': newStock},
+      where: 'id = ?',
+      whereArgs: [idObat],
+    );
+
+    return newStock;
+  }
 }

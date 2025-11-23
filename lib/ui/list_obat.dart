@@ -39,8 +39,9 @@ class _ListObatState extends State<ListObat> {
         foregroundColor: Colors.white,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
+        onPressed: () async {
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
+          ambilData();
         },
         backgroundColor: Variables.colorSecondary,
         foregroundColor: Colors.white,
@@ -85,10 +86,11 @@ class _ListObatState extends State<ListObat> {
                 itemCount: listObat.length,
                 itemBuilder: (context, index) {
                   return MyListItem(
-                    onTap: () {
+                    onTap: () async {
                       final obat = listObat[index];
 
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
+                      ambilData();
                     },
                     title: listObat[index].nama,
                     subtitle: NumberHelper.formatHarga(listObat[index].harga),
