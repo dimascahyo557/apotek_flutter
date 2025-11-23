@@ -1,3 +1,5 @@
+import 'package:apotek_flutter/helper/number_helper.dart';
+import 'package:apotek_flutter/model/models.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
 
@@ -6,16 +8,9 @@ const Color stockManagementColor = Variables.colorPrimary; // Ungu Tua untuk Man
 const Color detailTextColor = Variables.colorMuted; // Abu-abu gelap (#888888)
 
 class DetailObatScreen extends StatelessWidget {
-  final Map<String, dynamic> obat = const {
-    'nama': 'Panadol Biru',
-    'harga': 'Rp 14.000',
-    'stok': '15 Strip',
-    'deskripsi':
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    'gambarUrl': null,
-  };
+  final Obat obat;
 
-  const DetailObatScreen({super.key});
+  const DetailObatScreen({super.key, required this.obat});
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +47,8 @@ class DetailObatScreen extends StatelessWidget {
                       color: const Color(0xFFE0E0E0),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: obat['gambarUrl'] != null
-                        ? Image.network(obat['gambarUrl'])
+                    child: obat.foto != null
+                        ? Image.file(obat.foto!)
                         : const Icon(
                             Icons.image_outlined,
                             size: 60,
@@ -65,7 +60,7 @@ class DetailObatScreen extends StatelessWidget {
                   ), // UBAH: Kurangi jarak setelah gambar
 
                   Text(
-                    obat['nama'],
+                    obat.nama,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -76,7 +71,7 @@ class DetailObatScreen extends StatelessWidget {
                     height: 4,
                   ), // UBAH: Kurangi jarak setelah nama obat
                   Text(
-                    obat['harga'],
+                    NumberHelper.formatHarga(obat.harga),
                     style: const TextStyle(
                       fontSize: 18,
                       color: detailTextColor,
@@ -95,7 +90,7 @@ class DetailObatScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    obat['stok'],
+                    obat.stok.toString(),
                     style: const TextStyle(
                       fontSize: 16,
                       color: detailTextColor,
@@ -117,7 +112,7 @@ class DetailObatScreen extends StatelessWidget {
                     height: 4,
                   ), // UBAH: Kurangi jarak setelah "Deskripsi" title
                   Text(
-                    obat['deskripsi'],
+                    obat.deskripsi ?? '-',
                     style: const TextStyle(
                       fontSize: 14,
                       color: detailTextColor,

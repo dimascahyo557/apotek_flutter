@@ -1,3 +1,6 @@
+import 'package:apotek_flutter/helper/number_helper.dart';
+import 'package:apotek_flutter/model/obat.dart';
+import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/ui/detail_obat_screen.dart';
 import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
 import 'package:apotek_flutter/variables.dart';
@@ -12,6 +15,21 @@ class ListObat extends StatefulWidget {
 }
 
 class _ListObatState extends State<ListObat> {
+
+  List<Obat> listObat = [];
+
+  void ambilData({String? cari}) async {
+    final obatRepo = ObatRepository();
+    listObat = await obatRepo.getAllObat(search: cari);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    ambilData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +52,9 @@ class _ListObatState extends State<ListObat> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              onChanged: (value) {
+                ambilData(cari: value);
+              },
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search, color: Variables.colorMuted),
                 labelText: 'Cari obat',
@@ -61,15 +82,17 @@ class _ListObatState extends State<ListObat> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: 15,
+                itemCount: listObat.length,
                 itemBuilder: (context, index) {
                   return MyListItem(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen()));
+                      final obat = listObat[index];
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
                     },
-                    title: 'Panadol Biru',
-                    subtitle: 'RP 14.500',
-                    trailing: 'Stok: 15',
+                    title: listObat[index].nama,
+                    subtitle: NumberHelper.formatHarga(listObat[index].harga),
+                    trailing: 'Stok: ${listObat[index].stok}',
                   );
                 },
               )

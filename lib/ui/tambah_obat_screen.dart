@@ -1,10 +1,44 @@
+import 'dart:io';
+
+import 'package:apotek_flutter/model/obat.dart';
+import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class TambahObatScreen extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+class TambahObatScreen extends StatefulWidget {
 
   TambahObatScreen({super.key});
+
+  @override
+  State<TambahObatScreen> createState() => _TambahObatScreenState();
+}
+
+class _TambahObatScreenState extends State<TambahObatScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController namaController = TextEditingController();
+
+  TextEditingController hargaController = TextEditingController();
+
+  TextEditingController stokController = TextEditingController();
+
+  TextEditingController satuanController = TextEditingController();
+
+  TextEditingController deskripsiController = TextEditingController();
+
+  File? foto;
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        foto = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +86,9 @@ class TambahObatScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          pickImage();
+                        },
                         child: const Text(
                           'Pilih Foto',
                           style: TextStyle(color:  Variables.colorSecondary,
@@ -66,16 +102,17 @@ class TambahObatScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                CustomTextField(labelText: "Nama obat"),
+                CustomTextField(labelText: "Nama obat", controller: namaController,),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Harga obat"),
+                CustomTextField(labelText: "Harga obat", controller: hargaController,),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Stok awal"),
+                CustomTextField(labelText: "Stok awal", controller: stokController,),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Satuan"),
+                CustomTextField(labelText: "Satuan", controller: satuanController,),
                 const SizedBox(height: 15),
 
                 TextFormField(
+                  controller: deskripsiController,
                   maxLines: 3,
                   decoration: InputDecoration(
                     labelText: "Deskripsi obat (opsional)",
@@ -112,6 +149,20 @@ class TambahObatScreen extends StatelessWidget {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+
+                        // simpan data obat
+                        final obat = Obat(
+                          nama: namaController.text,
+                          harga: int.parse(hargaController.text),
+                          stok: int.parse(stokController.text),
+                          satuan: satuanController.text,
+                          deskripsi: deskripsiController.text,
+                          foto: foto,
+                        );
+                        final obatRepo = ObatRepository();
+                        obatRepo.insertObat(obat);
+
+                        // tampil pesan sukses
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Data obat disimpan'),
@@ -139,11 +190,13 @@ class TambahObatScreen extends StatelessWidget {
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
-  const CustomTextField({super.key, required this.labelText});
+  final TextEditingController? controller;
+  const CustomTextField({super.key, required this.labelText, this.controller});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.grey),
