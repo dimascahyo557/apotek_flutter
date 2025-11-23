@@ -3,6 +3,8 @@ import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/models.dart';
 import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/repository/penjualan_repository.dart';
+import 'package:apotek_flutter/ui/list_obat.dart';
+import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
@@ -62,13 +64,14 @@ class _HomeState extends State<Home> {
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,
       ),
+      drawer: _buildDrawer(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
         },
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,
-        child: Icon(Icons.add_shopping_cart, size: 35,),
+        child: Icon(Icons.point_of_sale, size: 35,),
       ),
       body: Padding(
         padding: const EdgeInsets.all(18),
@@ -167,6 +170,109 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          // custom header
+          Container(
+            width: double.infinity,
+            color: Variables.colorPrimary, // gunakan warna primary (ungu)
+            padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Dimas Cahyo Nugroho',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    'dimas@gmail.com',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // menu items
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                const SizedBox(height: 12),
+
+                ListTile(
+                  leading: Icon(Icons.medical_services, color: Color(0xFF555555)),
+                  title: const Text('Data Obat', style: TextStyle(color: Color(0xFF555555))),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // Navigasi ke halaman Data Obat
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => ListObat()));
+                  },
+                ),
+
+                ListTile(
+                  leading: Icon(Icons.point_of_sale, color: Color(0xFF555555)),
+                  title: const Text('Penjualan', style: TextStyle(color: Color(0xFF555555))),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // Navigator.push(context, MaterialPageRoute(builder: (_) => PenjualanScreen()));
+                  },
+                ),
+
+                ListTile(
+                  leading: Icon(Icons.person, color: Color(0xFF555555)),
+                  title: const Text('Pengguna', style: TextStyle(color: Color(0xFF555555))),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // Navigator.push(context, MaterialPageRoute(builder: (_) => PenggunaScreen()));
+                  },
+                ),
+
+                const Divider(height: 24),
+
+                ListTile(
+                  leading: Icon(Icons.power_settings_new, color: Color(0xFF555555)),
+                  title: const Text('Keluar', style: TextStyle(color: Color(0xFF555555))),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // logout app
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 450),
+                        pageBuilder: (_, animation, secondaryAnimation) => Login(),
+                        transitionsBuilder: (_, animation, __, child) {
+                          final tween = Tween(begin: const Offset(0, 1), end: Offset.zero)
+                              .chain(CurveTween(curve: Curves.easeOut));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
