@@ -174,7 +174,50 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
-                    /* ... */
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text(
+                            'Konfirmasi Hapus',
+                            style: TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ),
+                          content: const Text(
+                            'Apakah Anda yakin ingin menghapus data obat ini?',
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Tutup dialog
+                              },
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                await obatRepo.deleteObat(widget.obat.id!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Data obat berhasil dihapus'),
+                                  ),
+                                );
+                                Navigator.of(context).pop(); // Tutup dialog
+                                Navigator.of(
+                                  context,
+                                ).pop(); // Kembali ke halaman sebelumnya setelah hapus
+                              },
+                              child: const Text(
+                                'Hapus',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primaryColor,
