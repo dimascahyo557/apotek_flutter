@@ -24,6 +24,8 @@ class _HomeState extends State<Home> {
   List<Map<String, dynamic>> listPenjualan = [];
 
   void ambilData() async {
+    listPenjualan.clear();
+
     DateTime now = DateTime.now();
     DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
 
@@ -159,8 +161,7 @@ class _HomeState extends State<Home> {
                       );
                     },
                     title: NumberHelper.formatHarga(penjualan.totalHarga),
-                    subtitle:
-                        "${_countJumlahPembelian(itemPenjualan)} jenis obat",
+                    subtitle: "${itemPenjualan.length} jenis obat",
                     trailing: DateHelper.formatTanggal(
                       penjualan.tanggalTransaksi,
                     ),
