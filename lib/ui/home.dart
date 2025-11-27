@@ -3,6 +3,7 @@ import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/models.dart';
 import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/repository/penjualan_repository.dart';
+import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
 import 'package:apotek_flutter/ui/list_obat.dart';
 import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/variables.dart';
@@ -25,7 +26,9 @@ class _HomeState extends State<Home> {
     DateTime now = DateTime.now();
     DateTime startOfDay = DateTime(now.year, now.month, now.day, 0, 0, 0);
 
-    final penjualan = await penjualanRepo.getAllPenjualan(startDate: startOfDay);
+    final penjualan = await penjualanRepo.getAllPenjualan(
+      startDate: startOfDay,
+    );
     for (final penj in penjualan) {
       listPenjualan.add({
         'penjualan': penj,
@@ -38,6 +41,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     ambilData();
+
     super.initState();
   }
 
@@ -48,11 +52,17 @@ class _HomeState extends State<Home> {
   }
 
   int _countJumlahPembelian(List<ItemPenjualan> itemPenjualan) {
-    return itemPenjualan.fold(0, (itemSum, item) => itemSum + item.jumlahPembelian);
+    return itemPenjualan.fold(
+      0,
+      (itemSum, item) => itemSum + item.jumlahPembelian,
+    );
   }
 
   int _countTodayIncome() {
-    final totalIncome = listPenjualan.fold(0, (sum, mapPenjualan) => sum + mapPenjualan['penjualan'].totalHarga as int);
+    final totalIncome = listPenjualan.fold(
+      0,
+      (sum, mapPenjualan) => sum + mapPenjualan['penjualan'].totalHarga as int,
+    );
     return totalIncome;
   }
 
@@ -60,7 +70,10 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Obatin App', style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          'Obatin App',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,
       ),
@@ -71,7 +84,7 @@ class _HomeState extends State<Home> {
         },
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,
-        child: Icon(Icons.point_of_sale, size: 35,),
+        child: Icon(Icons.point_of_sale, size: 35),
       ),
       body: Padding(
         padding: const EdgeInsets.all(18),
@@ -80,10 +93,7 @@ class _HomeState extends State<Home> {
           children: [
             Text(
               'Selamat datang',
-              style: TextStyle(
-                color: Variables.colorMuted,
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Variables.colorMuted, fontSize: 16),
             ),
             Text(
               'Dimas Cahyo Nugroho',
@@ -96,8 +106,14 @@ class _HomeState extends State<Home> {
             SizedBox(height: 8),
             Row(
               children: [
-                _summaryCard(title: 'Obat terjual hari ini', value: _countTodayMedicineSale().toString()),
-                _summaryCard(title: 'Pendapatan hari ini', value: NumberHelper.formatHarga(_countTodayIncome())),
+                _summaryCard(
+                  title: 'Obat terjual hari ini',
+                  value: _countTodayMedicineSale().toString(),
+                ),
+                _summaryCard(
+                  title: 'Pendapatan hari ini',
+                  value: NumberHelper.formatHarga(_countTodayIncome()),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -133,15 +149,23 @@ class _HomeState extends State<Home> {
 
                   return MyListItem(
                     onTap: () {
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailPenjualanPage(penjualan: penjualan),
+                        ),
+                      );
                     },
                     title: NumberHelper.formatHarga(penjualan.totalHarga),
-                    subtitle: "${_countJumlahPembelian(itemPenjualan)} jenis obat",
-                    trailing: DateHelper.formatTanggal(penjualan.tanggalTransaksi),
+                    subtitle:
+                        "${_countJumlahPembelian(itemPenjualan)} jenis obat",
+                    trailing: DateHelper.formatTanggal(
+                      penjualan.tanggalTransaksi,
+                    ),
                   );
                 },
-
-              )
+              ),
             ),
           ],
         ),
@@ -162,10 +186,7 @@ class _HomeState extends State<Home> {
               Text(title),
               Text(
                 value ?? '-',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 21,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
               ),
             ],
           ),
@@ -198,10 +219,7 @@ class _HomeState extends State<Home> {
                   ),
                   Text(
                     'dimas@gmail.com',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -216,18 +234,30 @@ class _HomeState extends State<Home> {
                 const SizedBox(height: 12),
 
                 ListTile(
-                  leading: Icon(Icons.medical_services, color: Color(0xFF555555)),
-                  title: const Text('Data Obat', style: TextStyle(color: Color(0xFF555555))),
+                  leading: Icon(
+                    Icons.medical_services,
+                    color: Color(0xFF555555),
+                  ),
+                  title: const Text(
+                    'Data Obat',
+                    style: TextStyle(color: Color(0xFF555555)),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     // Navigasi ke halaman Data Obat
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => ListObat()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ListObat()),
+                    );
                   },
                 ),
 
                 ListTile(
                   leading: Icon(Icons.point_of_sale, color: Color(0xFF555555)),
-                  title: const Text('Penjualan', style: TextStyle(color: Color(0xFF555555))),
+                  title: const Text(
+                    'Penjualan',
+                    style: TextStyle(color: Color(0xFF555555)),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     // Navigator.push(context, MaterialPageRoute(builder: (_) => PenjualanScreen()));
@@ -236,7 +266,10 @@ class _HomeState extends State<Home> {
 
                 ListTile(
                   leading: Icon(Icons.person, color: Color(0xFF555555)),
-                  title: const Text('Pengguna', style: TextStyle(color: Color(0xFF555555))),
+                  title: const Text(
+                    'Pengguna',
+                    style: TextStyle(color: Color(0xFF555555)),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     // Navigator.push(context, MaterialPageRoute(builder: (_) => PenggunaScreen()));
@@ -246,8 +279,14 @@ class _HomeState extends State<Home> {
                 const Divider(height: 24),
 
                 ListTile(
-                  leading: Icon(Icons.power_settings_new, color: Color(0xFF555555)),
-                  title: const Text('Keluar', style: TextStyle(color: Color(0xFF555555))),
+                  leading: Icon(
+                    Icons.power_settings_new,
+                    color: Color(0xFF555555),
+                  ),
+                  title: const Text(
+                    'Keluar',
+                    style: TextStyle(color: Color(0xFF555555)),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     // logout app
@@ -255,10 +294,13 @@ class _HomeState extends State<Home> {
                       context,
                       PageRouteBuilder(
                         transitionDuration: Duration(milliseconds: 450),
-                        pageBuilder: (_, animation, secondaryAnimation) => Login(),
+                        pageBuilder: (_, animation, secondaryAnimation) =>
+                            Login(),
                         transitionsBuilder: (_, animation, __, child) {
-                          final tween = Tween(begin: const Offset(0, 1), end: Offset.zero)
-                              .chain(CurveTween(curve: Curves.easeOut));
+                          final tween = Tween(
+                            begin: const Offset(0, 1),
+                            end: Offset.zero,
+                          ).chain(CurveTween(curve: Curves.easeOut));
 
                           return SlideTransition(
                             position: animation.drive(tween),
