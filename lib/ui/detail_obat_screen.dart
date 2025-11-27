@@ -2,11 +2,14 @@ import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/models.dart';
 import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/ui/manajemen_stok.dart';
+import 'package:apotek_flutter/ui/ubah_obat_screen.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
 
-const Color primaryColor = Variables.colorSecondary; // Ungu sesuai Figma (#8C00FF)
-const Color stockManagementColor = Variables.colorPrimary; // Ungu Tua untuk Manajemen Stok (#450693)
+const Color primaryColor =
+    Variables.colorSecondary; // Ungu sesuai Figma (#8C00FF)
+const Color stockManagementColor =
+    Variables.colorPrimary; // Ungu Tua untuk Manajemen Stok (#450693)
 const Color detailTextColor = Variables.colorMuted; // Abu-abu gelap (#888888)
 
 class DetailObatScreen extends StatefulWidget {
@@ -114,7 +117,7 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
                     ),
                   ),
                   Text(
-                    obat.stok.toString(),
+                    "${obat.stok} ${obat.satuan}",
                     style: const TextStyle(
                       fontSize: 16,
                       color: detailTextColor,
@@ -136,7 +139,9 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
                     height: 4,
                   ), // UBAH: Kurangi jarak setelah "Deskripsi" title
                   Text(
-                    obat.deskripsi ?? '-',
+                    obat.deskripsi != null && obat.deskripsi!.isNotEmpty
+                        ? obat.deskripsi!
+                        : '-',
                     style: const TextStyle(
                       fontSize: 14,
                       color: detailTextColor,
@@ -191,8 +196,14 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
 
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    /* ... */
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UbahObatScreen(obat: obat),
+                      ),
+                    );
+                    ambilData();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
@@ -220,7 +231,9 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
 
           ElevatedButton(
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ManajemenStok(obat: obat)));
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => ManajemenStok(obat: obat)),
+              );
               ambilData();
             },
             style: ElevatedButton.styleFrom(

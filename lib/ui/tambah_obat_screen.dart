@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class TambahObatScreen extends StatefulWidget {
-
   TambahObatScreen({super.key});
 
   @override
@@ -31,7 +30,9 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
 
   Future<void> pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
     if (pickedFile != null) {
       setState(() {
@@ -48,9 +49,7 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
         foregroundColor: Colors.white,
         title: const Text(
           'Tambah Obat',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: false,
       ),
@@ -71,12 +70,20 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(15),
+                          image: foto != null
+                              ? DecorationImage(
+                                  image: FileImage(foto!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
-                        child: const Icon(
-                          Icons.image,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
+                        child: foto == null
+                            ? const Icon(
+                                Icons.image,
+                                size: 50,
+                                color: Colors.grey,
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
@@ -91,8 +98,9 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
                         },
                         child: const Text(
                           'Pilih Foto',
-                          style: TextStyle(color:  Variables.colorSecondary,
-                          fontWeight: FontWeight.w600,
+                          style: TextStyle(
+                            color: Variables.colorSecondary,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -102,13 +110,25 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
 
                 const SizedBox(height: 20),
 
-                CustomTextField(labelText: "Nama obat", controller: namaController,),
+                CustomTextField(
+                  labelText: "Nama obat",
+                  controller: namaController,
+                ),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Harga obat", controller: hargaController,),
+                CustomTextField(
+                  labelText: "Harga obat",
+                  controller: hargaController,
+                ),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Stok awal", controller: stokController,),
+                CustomTextField(
+                  labelText: "Stok awal",
+                  controller: stokController,
+                ),
                 const SizedBox(height: 15),
-                CustomTextField(labelText: "Satuan", controller: satuanController,),
+                CustomTextField(
+                  labelText: "Satuan",
+                  controller: satuanController,
+                ),
                 const SizedBox(height: 15),
 
                 TextFormField(
@@ -149,7 +169,6 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-
                         // simpan data obat
                         final obat = Obat(
                           nama: namaController.text,
@@ -164,18 +183,16 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
 
                         // tampil pesan sukses
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Data obat disimpan'),
-                          ),
+                          const SnackBar(content: Text('Data obat disimpan')),
                         );
+
+                        // kembali ke halaman sebelumnya
+                        Navigator.pop(context);
                       }
                     },
                     child: const Text(
                       'Simpan',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ),
@@ -201,17 +218,11 @@ class CustomTextField extends StatelessWidget {
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.grey),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Variables.colorMuted,
-            width: 1.5,
-          ),
+          borderSide: const BorderSide(color: Variables.colorMuted, width: 1.5),
           borderRadius: BorderRadius.circular(15),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Variables.colorMuted,
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: Variables.colorMuted, width: 2),
           borderRadius: BorderRadius.circular(15),
         ),
         errorBorder: OutlineInputBorder(
@@ -222,10 +233,7 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Variables.colorDanger,
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: Variables.colorDanger, width: 2),
           borderRadius: BorderRadius.circular(15),
         ),
       ),

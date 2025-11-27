@@ -1,22 +1,59 @@
+import 'dart:io';
+
+import 'package:apotek_flutter/model/obat.dart';
+import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class UbahObatScreen extends StatelessWidget {
+class UbahObatScreen extends StatefulWidget {
+  final Obat obat;
+  const UbahObatScreen({super.key, required this.obat});
+
+  @override
+  State<UbahObatScreen> createState() => _UbahObatScreenState();
+}
+
+class _UbahObatScreenState extends State<UbahObatScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _namaObatController = TextEditingController();
+  final _hargaObatController = TextEditingController();
+  final _satuanController = TextEditingController();
+  final _deskripsiObatController = TextEditingController();
+  File? _fotoObat;
 
-  UbahObatScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _namaObatController.text = widget.obat.nama;
+    _hargaObatController.text = widget.obat.harga.toString();
+    _satuanController.text = widget.obat.satuan ?? '';
+    _deskripsiObatController.text = widget.obat.deskripsi ?? '';
+    _fotoObat = widget.obat.foto;
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _fotoObat = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Variables.colorSecondary,
+        foregroundColor: Colors.white,
         title: const Text(
           'Ubah Obat',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         centerTitle: false,
       ),
@@ -38,8 +75,20 @@ class UbahObatScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(15),
+                          image: _fotoObat != null
+                              ? DecorationImage(
+                                  image: FileImage(_fotoObat!),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
-                        child: const Icon(Icons.image, size: 50, color: Colors.grey),
+                        child: _fotoObat == null
+                            ? const Icon(
+                                Icons.image,
+                                size: 50,
+                                color: Colors.grey,
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
@@ -50,13 +99,14 @@ class UbahObatScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          // nanti di sini bisa ditambahkan fungsi pilih foto
+                          pickImage();
                         },
-                        child: const Text(
+                        child: Text(
                           'Pilih Foto',
-                           style: TextStyle(color:Color(0xFF8C00FF),
-                           fontWeight: FontWeight.w600,
-                         ),
+                          style: TextStyle(
+                            color: Variables.colorSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -65,27 +115,41 @@ class UbahObatScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                const CustomTextField(labelText: "Nama obat"),
+                CustomTextField(
+                  labelText: "Nama obat",
+                  controller: _namaObatController,
+                ),
                 const SizedBox(height: 15),
-                const CustomTextField(labelText: "Harga obat"),
+                CustomTextField(
+                  labelText: "Harga obat",
+                  controller: _hargaObatController,
+                ),
                 const SizedBox(height: 15),
-                const CustomTextField(labelText: "Stok awal"),
-                const SizedBox(height: 15),
-                const CustomTextField(labelText: "Satuan"),
+                CustomTextField(
+                  labelText: "Satuan",
+                  controller: _satuanController,
+                ),
                 const SizedBox(height: 15),
 
                 TextFormField(
+                  controller: _deskripsiObatController,
                   maxLines: 3,
                   decoration: InputDecoration(
                     labelText: "Deskripsi obat (opsional)",
                     labelStyle: const TextStyle(color: Colors.grey),
                     alignLabelWithHint: true,
                     enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Variables.colorMuted, width: 1.5),
+                      borderSide: const BorderSide(
+                        color: Variables.colorMuted,
+                        width: 1.5,
+                      ),
                       borderRadius: BorderRadius.circular(15),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Variables.colorMuted, width: 2),
+                      borderSide: const BorderSide(
+                        color: Variables.colorMuted,
+                        width: 2,
+                      ),
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
@@ -97,17 +161,32 @@ class UbahObatScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8C00FF),
                       shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        await ObatRepository().updateObat(
+                          widget.obat.id!,
+                          Obat(
+                            id: widget.obat.id,
+                            nama: _namaObatController.text,
+                            harga: int.parse(_hargaObatController.text),
+                            satuan: _satuanController.text,
+                            deskripsi: _deskripsiObatController.text,
+                            foto: _fotoObat,
+                            stok: widget.obat.stok,
+                          ),
+                        );
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Perubahan disimpan')),
                         );
+
+                        Navigator.pop(context);
                       }
                     },
                     child: const Text(
@@ -127,11 +206,17 @@ class UbahObatScreen extends StatelessWidget {
 
 class CustomTextField extends StatelessWidget {
   final String labelText;
-  const CustomTextField({super.key, required this.labelText});
+  final TextEditingController controller;
+  const CustomTextField({
+    super.key,
+    required this.labelText,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.grey),
@@ -144,7 +229,10 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Variables.colorDanger, width: 1.5),
+          borderSide: const BorderSide(
+            color: Variables.colorDanger,
+            width: 1.5,
+          ),
           borderRadius: BorderRadius.circular(15),
         ),
         focusedErrorBorder: OutlineInputBorder(
