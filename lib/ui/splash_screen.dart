@@ -1,3 +1,4 @@
+import 'package:apotek_flutter/repository/pengguna_repository.dart';
 import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/angular_loading.dart';
@@ -12,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   bool _loadingComplete = false;
   bool _containerExpanded = false;
   bool _moveLogo = false;
@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    _createAdminUserIfNeeded();
     _changeStatusbarColor(Brightness.light);
     _initAnimationStep();
 
@@ -72,6 +73,10 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
+  void _createAdminUserIfNeeded() {
+    PenggunaRepository().createAdminUserIfNeeded();
+  }
+
   double _minValue(double a, double b) => a < b ? a : b;
   double _maxValue(double a, double b) => a > b ? a : b;
 
@@ -80,8 +85,11 @@ class _SplashScreenState extends State<SplashScreen> {
     final size = MediaQuery.of(context).size;
     final defaltContainerSize = _minValue(size.width / 2, 200);
     final containerSize = _containerExpanded
-      ? _maxValue(size.width + (size.width / 2), size.height + (size.height / 2))
-      : defaltContainerSize;
+        ? _maxValue(
+            size.width + (size.width / 2),
+            size.height + (size.height / 2),
+          )
+        : defaltContainerSize;
 
     return Scaffold(
       body: Stack(
@@ -93,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Variables.colorSecondary, Variables.colorPrimary]
+                  colors: [Variables.colorSecondary, Variables.colorPrimary],
                 ),
               ),
             ),
@@ -141,7 +149,9 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Stack(
                 children: [
                   AnimatedAlign(
-                    alignment: _moveLogo ? Alignment.centerRight : Alignment.center,
+                    alignment: _moveLogo
+                        ? Alignment.centerRight
+                        : Alignment.center,
                     duration: Duration(milliseconds: 600),
                     child: AnimatedOpacity(
                       opacity: _showLogoText ? 1 : 0,
@@ -154,7 +164,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                   ),
                   AnimatedAlign(
-                    alignment: _moveLogo ? Alignment.centerLeft : Alignment.center,
+                    alignment: _moveLogo
+                        ? Alignment.centerLeft
+                        : Alignment.center,
                     duration: Duration(milliseconds: 600),
                     child: Image.asset(
                       'assets/images/logo-icon only.png',

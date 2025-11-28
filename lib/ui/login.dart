@@ -1,3 +1,4 @@
+import 'package:apotek_flutter/repository/pengguna_repository.dart';
 import 'package:apotek_flutter/ui/home.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/app_text_button.dart';
@@ -13,6 +14,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final penggunaRepo = PenggunaRepository();
+
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,12 +33,24 @@ class _LoginState extends State<Login> {
     });
   }
 
-  void _doLogin() {
+  Future<void> _doLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // TODO: implement login action
+      final pengguna = await penggunaRepo.getPenggunaByEmail(
+        _emailController.text,
+      );
+
+      if (pengguna == null || pengguna.password != _passwordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email atau kata sandi salah'),
+            backgroundColor: Variables.colorDanger,
+          ),
+        );
+        return;
+      }
 
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => Home())
+        MaterialPageRoute(builder: (_) => Home(pengguna: pengguna)),
       );
     }
   }
@@ -61,22 +76,22 @@ class _LoginState extends State<Login> {
           // Main Logo
           Center(
             child: SizedBox(
-                width: splashScreenDefaltContainerSize * 2 - 48,
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo-icon only.png',
-                      width: logoSize,
-                      height: logoSize,
-                    ),
-                    Image.asset(
-                      'assets/images/logo-text only (dark).png',
-                      width: splashScreenDefaltContainerSize,
-                      fit: BoxFit.contain,
-                    ),
-                  ],
-                ),
+              width: splashScreenDefaltContainerSize * 2 - 48,
+              child: Row(
+                children: [
+                  Image.asset(
+                    'assets/images/logo-icon only.png',
+                    width: logoSize,
+                    height: logoSize,
+                  ),
+                  Image.asset(
+                    'assets/images/logo-text only (dark).png',
+                    width: splashScreenDefaltContainerSize,
+                    fit: BoxFit.contain,
+                  ),
+                ],
               ),
+            ),
           ),
 
           // Login Body
@@ -86,9 +101,7 @@ class _LoginState extends State<Login> {
             child: Center(
               child: Container(
                 padding: const EdgeInsets.all(32),
-                constraints: BoxConstraints(
-                  maxWidth: 500,
-                ),
+                constraints: BoxConstraints(maxWidth: 500),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -98,25 +111,36 @@ class _LoginState extends State<Login> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                        )
+                        ),
                       ),
                       SizedBox(height: 16),
-                            
+
                       MyTextFormField(
                         labelText: 'Email',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
-                            
+
                       MyTextFormField(
                         labelText: 'Kata Sandi',
                         controller: _passwordController,
                         obscureText: true,
-                        // keyboardType: TextInputType.pas,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Kata sandi tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
-                            
+
                       SizedBox(
                         width: double.infinity,
                         child: AppTextButton(
@@ -126,21 +150,21 @@ class _LoginState extends State<Login> {
                           foregroundColor: Colors.white,
                         ),
                       ),
-                            
-                      SizedBox(height: _maxValue(size.height - logoSize - 460, 80)),
+
+                      SizedBox(
+                        height: _maxValue(size.height - logoSize - 460, 80),
+                      ),
                       Text(
                         'Oleh Kelompok 3\n 19.5E.01',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Variables.colorMuted,
-                        ),
+                        style: TextStyle(color: Variables.colorMuted),
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

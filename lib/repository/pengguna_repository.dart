@@ -42,21 +42,12 @@ class PenggunaRepository {
       'password': p.password,
       'role': p.role,
     };
-    return await db.update(
-      'pengguna',
-      map,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.update('pengguna', map, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<Pengguna?> getPenggunaById(int id) async {
     final db = await _dbHelper.database;
-    final rows = await db.query(
-      'pengguna',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final rows = await db.query('pengguna', where: 'id = ?', whereArgs: [id]);
 
     if (rows.isEmpty) return null;
     final r = rows.first;
@@ -72,11 +63,7 @@ class PenggunaRepository {
 
   Future<int> deletePengguna(int id) async {
     final db = await _dbHelper.database;
-    return await db.delete(
-      'pengguna',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return await db.delete('pengguna', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<Pengguna>> getAllPengguna({
@@ -127,5 +114,34 @@ class PenggunaRepository {
         role: r['role'] as String?,
       );
     }).toList();
+  }
+
+  Future<int> createAdminUserIfNeeded() async {
+    final db = await _dbHelper.database;
+
+    final existingAdmin = await db.query(
+      'pengguna',
+      where: 'email = ?',
+      whereArgs: ['admin@mail.com'],
+      limit: 1,
+    );
+
+    if (existingAdmin.isEmpty) {
+      final newAdmin = Pengguna(
+        nama: 'Admin User',
+        email: 'admin@mail.com',
+        password: 'password',
+        role: 'Admin',
+      );
+
+      return await db.insert('pengguna', {
+        'nama': newAdmin.nama,
+        'email': newAdmin.email,
+        'password': newAdmin.password,
+        'role': newAdmin.role,
+      });
+    }
+
+    return existingAdmin.first['id'] as int;
   }
 }

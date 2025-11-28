@@ -12,7 +12,8 @@ import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final Pengguna pengguna;
+  const Home({super.key, required this.pengguna});
 
   @override
   State<Home> createState() => _HomeState();
@@ -80,7 +81,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,
       ),
-      drawer: _buildDrawer(context),
+      drawer: _buildDrawer(context, widget.pengguna),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
@@ -99,7 +100,7 @@ class _HomeState extends State<Home> {
               style: TextStyle(color: Variables.colorMuted, fontSize: 16),
             ),
             Text(
-              'Dimas Cahyo Nugroho',
+              widget.pengguna.nama,
               style: TextStyle(
                 color: Variables.colorPrimary,
                 fontWeight: FontWeight.bold,
@@ -197,22 +198,24 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget _buildDrawer(BuildContext context, Pengguna pengguna) {
+    final isAdmin = pengguna.role == 'Admin';
+
     return Drawer(
       child: Column(
         children: [
           // custom header
           Container(
             width: double.infinity,
-            color: Variables.colorPrimary, // gunakan warna primary (ungu)
+            color: Variables.colorPrimary,
             padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
             child: SafeArea(
               bottom: false,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'Dimas Cahyo Nugroho',
+                    pengguna.nama,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -220,7 +223,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Text(
-                    'dimas@gmail.com',
+                    pengguna.email,
                     style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
@@ -269,17 +272,18 @@ class _HomeState extends State<Home> {
                   },
                 ),
 
-                ListTile(
-                  leading: Icon(Icons.person, color: Color(0xFF555555)),
-                  title: const Text(
-                    'Pengguna',
-                    style: TextStyle(color: Color(0xFF555555)),
+                if (isAdmin)
+                  ListTile(
+                    leading: Icon(Icons.person, color: Color(0xFF555555)),
+                    title: const Text(
+                      'Pengguna',
+                      style: TextStyle(color: Color(0xFF555555)),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigator.push(context, MaterialPageRoute(builder: (_) => PenggunaScreen()));
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Navigator.push(context, MaterialPageRoute(builder: (_) => PenggunaScreen()));
-                  },
-                ),
 
                 const Divider(height: 24),
 
