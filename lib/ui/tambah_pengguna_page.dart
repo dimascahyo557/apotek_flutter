@@ -1,19 +1,25 @@
+import 'package:apotek_flutter/model/pengguna.dart';
+import 'package:apotek_flutter/repository/pengguna_repository.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
 
 class TambahPenggunaPage extends StatefulWidget {
+  const TambahPenggunaPage({super.key});
+
   @override
-  _TambahPenggunaPageState createState() => _TambahPenggunaPageState();
+  createState() => _TambahPenggunaPageState();
 }
 
 class _TambahPenggunaPageState extends State<TambahPenggunaPage> {
   final _formKey = GlobalKey<FormState>();
+  final penggunaRepo = PenggunaRepository();
 
   // Controller untuk setiap field
   final TextEditingController namaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   String? selectedRole;
 
@@ -21,10 +27,14 @@ class _TambahPenggunaPageState extends State<TambahPenggunaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Pengguna'),
+        title: Text(
+          'Tambah Pengguna',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Variables.colorPrimary,
-        elevation: 1,
+        elevation: 3,
+        shadowColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,12 +58,12 @@ class _TambahPenggunaPageState extends State<TambahPenggunaPage> {
 
               // Role (Dropdown)
               DropdownButtonFormField<String>(
-                value: selectedRole,
-                items: ['Admin', 'User', 'Kasir']
-                    .map((role) => DropdownMenuItem(
-                          value: role,
-                          child: Text(role),
-                        ))
+                initialValue: selectedRole,
+                items: ['Admin', 'Kasir']
+                    .map(
+                      (role) =>
+                          DropdownMenuItem(value: role, child: Text(role)),
+                    )
                     .toList(),
                 decoration: InputDecoration(
                   labelText: 'Role',
@@ -127,11 +137,22 @@ class _TambahPenggunaPageState extends State<TambahPenggunaPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      await penggunaRepo.insertPengguna(
+                        Pengguna(
+                          nama: namaController.text,
+                          email: emailController.text,
+                          password: passwordController.text,
+                          role: selectedRole!,
+                        ),
+                      );
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Data berhasil disimpan')),
                       );
+
+                      Navigator.pop(context);
                     }
                   },
                   child: Text('Simpan'),

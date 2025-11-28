@@ -1,18 +1,12 @@
+import 'package:apotek_flutter/model/models.dart';
+import 'package:apotek_flutter/repository/pengguna_repository.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:flutter/material.dart';
 
 class UbahPenggunaPage extends StatefulWidget {
-  // Misalnya kita ingin ubah data pengguna yang sudah ada
-  final String namaAwal;
-  final String emailAwal;
-  final String roleAwal;
+  final Pengguna pengguna;
 
-  const UbahPenggunaPage({
-    Key? key,
-    required this.namaAwal,
-    required this.emailAwal,
-    required this.roleAwal,
-  }) : super(key: key);
+  const UbahPenggunaPage({Key? key, required this.pengguna}) : super(key: key);
 
   @override
   _UbahPenggunaPageState createState() => _UbahPenggunaPageState();
@@ -20,6 +14,7 @@ class UbahPenggunaPage extends StatefulWidget {
 
 class _UbahPenggunaPageState extends State<UbahPenggunaPage> {
   final _formKey = GlobalKey<FormState>();
+  final penggunaRepository = PenggunaRepository();
 
   late TextEditingController namaController;
   late TextEditingController emailController;
@@ -31,11 +26,11 @@ class _UbahPenggunaPageState extends State<UbahPenggunaPage> {
   @override
   void initState() {
     super.initState();
-    namaController = TextEditingController(text: widget.namaAwal);
-    emailController = TextEditingController(text: widget.emailAwal);
+    namaController = TextEditingController(text: widget.pengguna.nama);
+    emailController = TextEditingController(text: widget.pengguna.email);
     passwordController = TextEditingController();
     confirmPasswordController = TextEditingController();
-    selectedRole = widget.roleAwal;
+    selectedRole = widget.pengguna.role;
   }
 
   @override
@@ -44,8 +39,9 @@ class _UbahPenggunaPageState extends State<UbahPenggunaPage> {
       appBar: AppBar(
         title: Text('Ubah Pengguna'),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.deepPurple,
-        elevation: 1,
+        foregroundColor: Variables.colorPrimary,
+        elevation: 3,
+        shadowColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,12 +65,12 @@ class _UbahPenggunaPageState extends State<UbahPenggunaPage> {
 
               // Role Dropdown
               DropdownButtonFormField<String>(
-                value: selectedRole,
-                items: ['Admin', 'User', 'Kasir']
-                    .map((role) => DropdownMenuItem(
-                          value: role,
-                          child: Text(role),
-                        ))
+                initialValue: selectedRole,
+                items: ['Admin', 'Kasir']
+                    .map(
+                      (role) =>
+                          DropdownMenuItem(value: role, child: Text(role)),
+                    )
                     .toList(),
                 decoration: InputDecoration(
                   labelText: 'Role',
@@ -150,9 +146,22 @@ class _UbahPenggunaPageState extends State<UbahPenggunaPage> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      penggunaRepository.updatePengguna(
+                        widget.pengguna.id!,
+                        Pengguna(
+                          id: widget.pengguna.id,
+                          nama: namaController.text,
+                          email: emailController.text,
+                          password: passwordController.text,
+                          role: selectedRole!,
+                        ),
+                      );
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Perubahan berhasil disimpan')),
                       );
+
+                      Navigator.pop(context);
                     }
                   },
                   child: Text('Simpan Perubahan'),
