@@ -1,5 +1,6 @@
 import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/obat.dart';
+import 'package:apotek_flutter/model/pengguna.dart';
 import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/ui/detail_obat_screen.dart';
 import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
@@ -8,14 +9,14 @@ import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
 
 class ListObat extends StatefulWidget {
-  const ListObat({super.key});
+  final Pengguna pengguna;
+  const ListObat({super.key, required this.pengguna});
 
   @override
   State<ListObat> createState() => _ListObatState();
 }
 
 class _ListObatState extends State<ListObat> {
-
   List<Obat> listObat = [];
 
   void ambilData({String? cari}) async {
@@ -32,21 +33,27 @@ class _ListObatState extends State<ListObat> {
 
   @override
   Widget build(BuildContext context) {
+    final isPenggunaAdmin = widget.pengguna.role == 'Admin';
     return Scaffold(
       appBar: AppBar(
-        title: Text('Data Obat', style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text('Data Obat', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Variables.colorSecondary,
         foregroundColor: Colors.white,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
-          ambilData();
-        },
-        backgroundColor: Variables.colorSecondary,
-        foregroundColor: Colors.white,
-        child: Icon(Icons.add, size: 40,),
-      ),
+      floatingActionButton: isPenggunaAdmin
+          ? FloatingActionButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TambahObatScreen()),
+                );
+                ambilData();
+              },
+              backgroundColor: Variables.colorSecondary,
+              foregroundColor: Colors.white,
+              child: Icon(Icons.add, size: 40),
+            )
+          : null,
       body: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -57,17 +64,24 @@ class _ListObatState extends State<ListObat> {
                 ambilData(cari: value);
               },
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: Variables.colorMuted),
-                labelText: 'Cari obat',
-                labelStyle: TextStyle(
-                  color: Colors.grey,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Variables.colorMuted,
                 ),
+                labelText: 'Cari obat',
+                labelStyle: TextStyle(color: Colors.grey),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Variables.colorMuted, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: Variables.colorMuted,
+                    width: 1.5,
+                  ),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Variables.colorMuted, width: 2),
+                  borderSide: const BorderSide(
+                    color: Variables.colorMuted,
+                    width: 2,
+                  ),
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
@@ -89,7 +103,15 @@ class _ListObatState extends State<ListObat> {
                     onTap: () async {
                       final obat = listObat[index];
 
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => DetailObatScreen(obat: obat)));
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailObatScreen(
+                            obat: obat,
+                            pengguna: widget.pengguna,
+                          ),
+                        ),
+                      );
                       ambilData();
                     },
                     title: listObat[index].nama,
@@ -97,7 +119,7 @@ class _ListObatState extends State<ListObat> {
                     trailing: 'Stok: ${listObat[index].stok}',
                   );
                 },
-              )
+              ),
             ),
           ],
         ),

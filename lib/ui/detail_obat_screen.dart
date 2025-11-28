@@ -13,9 +13,14 @@ const Color stockManagementColor =
 const Color detailTextColor = Variables.colorMuted; // Abu-abu gelap (#888888)
 
 class DetailObatScreen extends StatefulWidget {
+  final Pengguna pengguna;
   final Obat obat;
 
-  const DetailObatScreen({super.key, required this.obat});
+  const DetailObatScreen({
+    super.key,
+    required this.obat,
+    required this.pengguna,
+  });
 
   @override
   State<DetailObatScreen> createState() => _DetailObatScreenState();
@@ -41,6 +46,7 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isPenggunaAdmin = widget.pengguna.role == 'Admin';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
@@ -153,7 +159,7 @@ class _DetailObatScreenState extends State<DetailObatScreen> {
             ),
           ),
 
-          _buildFooterButtons(context),
+          if (isPenggunaAdmin) _buildFooterButtons(context),
         ],
       ),
     );

@@ -252,7 +252,9 @@ class _HomeState extends State<Home> {
                     // Navigasi ke halaman Data Obat
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => ListObat()),
+                      MaterialPageRoute(
+                        builder: (_) => ListObat(pengguna: pengguna),
+                      ),
                     );
                   },
                 ),
