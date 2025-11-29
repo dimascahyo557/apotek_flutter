@@ -155,7 +155,7 @@ class _LoginState extends State<Login> {
                         height: _maxValue(size.height - logoSize - 460, 80),
                       ),
                       Text(
-                        'Oleh Kelompok 3\n 19.5E.01',
+                        'Oleh Kelompok 1\n 19.5E.01',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Variables.colorMuted),
                       ),
