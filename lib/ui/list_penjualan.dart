@@ -1,20 +1,16 @@
 import 'package:apotek_flutter/helper/date_helper.dart';
 import 'package:apotek_flutter/helper/number_helper.dart';
-import 'package:apotek_flutter/model/item_penjualan.dart';
-import 'package:apotek_flutter/model/obat.dart';
-import 'package:apotek_flutter/model/penjualan.dart';
-import 'package:apotek_flutter/repository/obat_repository.dart';
+import 'package:apotek_flutter/model/pengguna.dart';
 import 'package:apotek_flutter/repository/penjualan_repository.dart';
-import 'package:apotek_flutter/ui/detail_obat_screen.dart';
 import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
-import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
 import 'package:apotek_flutter/ui/transaksi_penjualan_page.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
 
 class ListPenjualan extends StatefulWidget {
-  const ListPenjualan({super.key});
+  final Pengguna pengguna;
+  const ListPenjualan({super.key, required this.pengguna});
 
   @override
   State<ListPenjualan> createState() => _ListPenjualanState();
@@ -59,7 +55,10 @@ class _ListPenjualanState extends State<ListPenjualan> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TransaksiPenjualanPage()),
+            MaterialPageRoute(
+              builder: (context) =>
+                  TransaksiPenjualanPage(kasir: widget.pengguna),
+            ),
           );
           ambilData();
         },

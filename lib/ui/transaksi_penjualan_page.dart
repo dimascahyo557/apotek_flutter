@@ -8,7 +8,8 @@ import 'package:apotek_flutter/widget/my_text_form_field.dart';
 import 'package:flutter/material.dart';
 
 class TransaksiPenjualanPage extends StatefulWidget {
-  const TransaksiPenjualanPage({super.key});
+  final Pengguna kasir;
+  const TransaksiPenjualanPage({super.key, required this.kasir});
 
   @override
   State<TransaksiPenjualanPage> createState() => _TransaksiPenjualanPageState();
@@ -89,7 +90,7 @@ class _TransaksiPenjualanPageState extends State<TransaksiPenjualanPage> {
               .map<ItemPenjualan>((item) => item[0])
               .toList();
           penjualanRepo.jualObat(
-            idKasir: 1,
+            idKasir: widget.kasir.id!,
             items: listItems,
             jumlahBayar: jumlahBayar,
           );

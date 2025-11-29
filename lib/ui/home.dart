@@ -88,7 +88,10 @@ class _HomeState extends State<Home> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TransaksiPenjualanPage()),
+            MaterialPageRoute(
+              builder: (context) =>
+                  TransaksiPenjualanPage(kasir: widget.pengguna),
+            ),
           );
           ambilData();
         },
@@ -275,7 +278,9 @@ class _HomeState extends State<Home> {
                     Navigator.pop(context);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => ListPenjualan()),
+                      MaterialPageRoute(
+                        builder: (_) => ListPenjualan(pengguna: pengguna),
+                      ),
                     );
                   },
                 ),

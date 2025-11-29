@@ -128,7 +128,7 @@ class PenggunaRepository {
 
     if (existingAdmin.isEmpty) {
       final newAdmin = Pengguna(
-        nama: 'Admin User',
+        nama: 'Administrator',
         email: 'admin@mail.com',
         password: 'password',
         role: 'Admin',
