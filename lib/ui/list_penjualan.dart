@@ -8,6 +8,7 @@ import 'package:apotek_flutter/repository/penjualan_repository.dart';
 import 'package:apotek_flutter/ui/detail_obat_screen.dart';
 import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
 import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
+import 'package:apotek_flutter/ui/transaksi_penjualan_page.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,10 @@ class _ListPenjualanState extends State<ListPenjualan> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // await Navigator.push(context, MaterialPageRoute(builder: (context) => TambahPenjualanScreen()));
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TransaksiPenjualanPage()),
+          );
           ambilData();
         },
         backgroundColor: Variables.colorPrimary,

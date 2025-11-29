@@ -1,8 +1,4 @@
-import 'package:apotek_flutter/model/pengguna.dart';
-import 'package:apotek_flutter/ui/detail_pengguna_page.dart';
-import 'package:apotek_flutter/ui/list_obat.dart';
 import 'package:apotek_flutter/ui/splash_screen.dart';
-import 'package:apotek_flutter/ui/tambah_obat_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,15 +21,7 @@ class MyApp extends StatelessWidget {
           bodySmall: TextStyle(color: Color(0xFF444444)),
         ),
       ),
-      home: DetailPenggunaPage(
-        pengguna: Pengguna(
-          id: 10,
-          nama: "Dimas Cahyo Nugroho",
-          email: "dimas@gmail.com",
-          password: "dimas",
-          role: "Admin",
-        ),
-      ),
+      home: const SplashScreen(),
     );
   }
 }

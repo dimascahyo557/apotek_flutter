@@ -8,6 +8,7 @@ import 'package:apotek_flutter/ui/list_obat.dart';
 import 'package:apotek_flutter/ui/list_penjualan.dart';
 import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/ui/tentang_pembuat.dart';
+import 'package:apotek_flutter/ui/transaksi_penjualan_page.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/my_list_item.dart';
 import 'package:flutter/material.dart';
@@ -84,8 +85,12 @@ class _HomeState extends State<Home> {
       ),
       drawer: _buildDrawer(context, widget.pengguna),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => TambahObatScreen()));
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TransaksiPenjualanPage()),
+          );
+          ambilData();
         },
         backgroundColor: Variables.colorPrimary,
         foregroundColor: Colors.white,

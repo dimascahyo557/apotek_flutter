@@ -9,6 +9,7 @@ class MyTextFormField extends StatefulWidget {
   final int? maxLines;
   final TextInputType? keyboardType;
   final bool obscureText;
+  final void Function(String)? onChanged;
 
   const MyTextFormField({
     super.key,
@@ -19,6 +20,7 @@ class MyTextFormField extends StatefulWidget {
     this.maxLines = 1,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
+    this.onChanged,
   });
 
   @override
@@ -30,15 +32,14 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
+      onChanged: widget.onChanged,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
       decoration: InputDecoration(
         labelText: widget.labelText,
-        labelStyle: TextStyle(
-          color: Colors.grey,
-        ),
+        labelStyle: TextStyle(color: Colors.grey),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Variables.colorMuted, width: 1.5),
           borderRadius: BorderRadius.circular(15),
