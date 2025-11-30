@@ -5,6 +5,7 @@ import 'package:apotek_flutter/repository/obat_repository.dart';
 import 'package:apotek_flutter/repository/penjualan_repository.dart';
 import 'package:apotek_flutter/ui/detail_penjualan_page.dart';
 import 'package:apotek_flutter/ui/list_obat.dart';
+import 'package:apotek_flutter/ui/list_pengguna.dart';
 import 'package:apotek_flutter/ui/list_penjualan.dart';
 import 'package:apotek_flutter/ui/login.dart';
 import 'package:apotek_flutter/ui/tentang_pembuat.dart';
@@ -294,7 +295,10 @@ class _HomeState extends State<Home> {
                     ),
                     onTap: () {
                       Navigator.pop(context);
-                      // Navigator.push(context, MaterialPageRoute(builder: (_) => PenggunaScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ListPengguna()),
+                      );
                     },
                   ),
 

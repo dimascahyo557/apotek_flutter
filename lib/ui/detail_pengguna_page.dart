@@ -16,17 +16,17 @@ class DetailPenggunaPage extends StatefulWidget {
 class _DetailPenggunaPageState extends State<DetailPenggunaPage> {
   final penggunaRepo = PenggunaRepository();
 
-  late String namaPengguna;
-  late String emailPengguna;
-  late String rolePengguna;
+  String? namaPengguna;
+  String? emailPengguna;
+  String? rolePengguna;
 
   bool hapusPressed = false;
   bool ubahPressed = false;
 
   @override
   void initState() {
-    super.initState();
     ambilData();
+    super.initState();
   }
 
   void ambilData() async {
@@ -63,7 +63,7 @@ class _DetailPenggunaPageState extends State<DetailPenggunaPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.pengguna.nama,
+              namaPengguna ?? '-',
               style: TextStyle(
                 color: purple,
                 fontSize: 20,
@@ -73,7 +73,7 @@ class _DetailPenggunaPageState extends State<DetailPenggunaPage> {
 
             const SizedBox(height: 6),
             Text(
-              widget.pengguna.role!,
+              rolePengguna ?? '-',
               style: TextStyle(color: Colors.black54, fontSize: 13),
             ),
 
@@ -87,7 +87,7 @@ class _DetailPenggunaPageState extends State<DetailPenggunaPage> {
               ),
             ),
             const SizedBox(height: 6),
-            Text(widget.pengguna.email, style: TextStyle(color: Colors.grey)),
+            Text(emailPengguna ?? '-', style: TextStyle(color: Colors.grey)),
 
             const SizedBox(height: 18),
             const Text(

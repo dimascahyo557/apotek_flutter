@@ -1,6 +1,7 @@
 import 'package:apotek_flutter/helper/number_helper.dart';
 import 'package:apotek_flutter/model/models.dart';
 import 'package:apotek_flutter/repository/penjualan_repository.dart';
+import 'package:apotek_flutter/ui/pilih_obat.dart';
 import 'package:apotek_flutter/variables.dart';
 import 'package:apotek_flutter/widget/app_outlined_button.dart';
 import 'package:apotek_flutter/widget/app_text_button.dart';
@@ -22,38 +23,32 @@ class _TransaksiPenjualanPageState extends State<TransaksiPenjualanPage> {
   @override
   void initState() {
     super.initState();
-    // TODO: delete this (just a dummy data)
-    items = [
-      [
-        ItemPenjualan(
-          idObat: 1,
-          jumlahPembelian: 2,
-          hargaSatuan: 10000,
-          totalHarga: 20000,
-        ),
-        Obat(id: 1, nama: 'Obat 1', harga: 10000, stok: 10, satuan: 'Botol'),
-      ],
-    ];
   }
 
   Future<void> _pilihObat() async {
-    // final obat = await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const ObatListPage()),
-    // );
-    // if (obat != null) {
-    //   setState(() {
-    //     items.add([
-    //       ItemPenjualan(
-    //         idObat: obat.id,
-    //         jumlahPembelian: 1,
-    //         hargaSatuan: obat.harga,
-    //         totalHarga: obat.harga,
-    //       ),
-    //       obat,
-    //     ]);
-    //   });
-    // }
+    final itemPenjualan = items.map<ItemPenjualan>((item) => item[0]).toList();
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PilihObat(itemPenjualan: itemPenjualan),
+      ),
+    );
+    if (result != null) {
+      final obat = result['obat'];
+      final jumlah = result['jumlah'];
+      setState(() {
+        items.add([
+          ItemPenjualan(
+            idObat: obat.id,
+            jumlahPembelian: int.parse(jumlah),
+            hargaSatuan: obat.harga,
+            totalHarga: obat.harga * int.parse(jumlah),
+          ),
+          obat,
+        ]);
+      });
+    }
   }
 
   void _hapusObat(int index) {
@@ -131,8 +126,19 @@ class _TransaksiPenjualanPageState extends State<TransaksiPenjualanPage> {
             SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: items.length,
+                itemCount: items.isNotEmpty ? items.length : 1,
                 itemBuilder: (context, index) {
+                  if (items.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'Tidak ada obat yang dipilih',
+                        style: TextStyle(
+                          color: Variables.colorMuted,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    );
+                  }
                   return _listObat(
                     obat: items[index][1],
                     item: items[index][0],

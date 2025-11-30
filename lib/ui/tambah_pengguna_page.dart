@@ -86,8 +86,15 @@ class _TambahPenggunaPageState extends State<TambahPenggunaPage> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                validator: (value) =>
-                    value!.isEmpty ? 'Kolom ini tidak boleh kosong' : null,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Kolom ini tidak boleh kosong';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Format email harus sesuai';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
 
