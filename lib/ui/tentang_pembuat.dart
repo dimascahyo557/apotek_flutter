@@ -40,7 +40,7 @@ class _TentangPembuatState extends State<TentangPembuat> {
       'nama': 'Muhammad Asyraf',
       'nim': '19230137',
       'role': 'Anggota',
-      'photo': 'assets/images/authors/Firmansyah Darussalam.jpg',
+      'photo': 'assets/images/authors/Muhammad Asyraf.jpg',
     },
   ];
   int _currentIndex = 0;
