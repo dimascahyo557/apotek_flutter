@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Obatin App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Nunito',
         textTheme: const TextTheme(
