@@ -13,6 +13,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool _isWidgetRebuilt = false;
   bool _loadingComplete = false;
   bool _containerExpanded = false;
   bool _moveLogo = false;
@@ -77,6 +78,12 @@ class _SplashScreenState extends State<SplashScreen> {
     PenggunaRepository().createAdminUserIfNeeded();
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    _isWidgetRebuilt = true;
+    super.setState(fn);
+  }
+
   double _minValue(double a, double b) => a < b ? a : b;
   double _maxValue(double a, double b) => a > b ? a : b;
 
@@ -122,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              duration: Duration(milliseconds: 800),
+              duration: Duration(milliseconds: _isWidgetRebuilt ? 800 : 0),
             ),
           ),
 
