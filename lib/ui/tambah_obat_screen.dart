@@ -118,11 +118,13 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
                 CustomTextField(
                   labelText: "Harga obat",
                   controller: hargaController,
+                  keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 15),
                 CustomTextField(
                   labelText: "Stok awal",
                   controller: stokController,
+                  keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 15),
                 CustomTextField(
@@ -208,12 +210,19 @@ class _TambahObatScreenState extends State<TambahObatScreen> {
 class CustomTextField extends StatelessWidget {
   final String labelText;
   final TextEditingController? controller;
-  const CustomTextField({super.key, required this.labelText, this.controller});
+  final TextInputType? keyboardType;
+  const CustomTextField({
+    super.key,
+    required this.labelText,
+    this.controller,
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.grey),

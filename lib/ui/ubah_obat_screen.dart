@@ -123,6 +123,7 @@ class _UbahObatScreenState extends State<UbahObatScreen> {
                 CustomTextField(
                   labelText: "Harga obat",
                   controller: _hargaObatController,
+                  keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 15),
                 CustomTextField(
@@ -207,16 +208,19 @@ class _UbahObatScreenState extends State<UbahObatScreen> {
 class CustomTextField extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
+  final TextInputType? keyboardType;
   const CustomTextField({
     super.key,
     required this.labelText,
     required this.controller,
+    this.keyboardType,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.grey),
