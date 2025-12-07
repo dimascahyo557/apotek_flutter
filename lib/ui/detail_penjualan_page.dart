@@ -40,6 +40,20 @@ class _DetailPenjualanPageState extends State<DetailPenjualanPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
+              'Kode Penjualan',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Variables.colorPrimary,
+              ),
+            ),
+            Text(
+              widget.penjualan.kodePenjualan,
+              style: TextStyle(color: Variables.colorMuted, fontSize: 16),
+            ),
+            SizedBox(height: 16),
+
+            Text(
               'Tanggal Transaksi',
               style: TextStyle(
                 fontSize: 18,

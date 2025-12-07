@@ -159,7 +159,6 @@ class _HomeState extends State<Home> {
                   }
 
                   final penjualan = listPenjualan[index]['penjualan'];
-                  final itemPenjualan = listPenjualan[index]['item'];
 
                   return MyListItem(
                     onTap: () {
@@ -171,8 +170,8 @@ class _HomeState extends State<Home> {
                         ),
                       );
                     },
-                    title: NumberHelper.formatHarga(penjualan.totalHarga),
-                    subtitle: "${itemPenjualan.length} jenis obat",
+                    title: penjualan.kodePenjualan,
+                    subtitle: NumberHelper.formatHarga(penjualan.totalHarga),
                     trailing: DateHelper.formatTanggal(
                       penjualan.tanggalTransaksi,
                     ),

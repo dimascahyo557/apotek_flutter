@@ -112,8 +112,8 @@ class _ListPenjualanState extends State<ListPenjualan> {
                       );
                       ambilData();
                     },
-                    title: NumberHelper.formatHarga(penjualan.totalHarga),
-                    subtitle: "${itemPenjualan.length} jenis obat",
+                    title: penjualan.kodePenjualan,
+                    subtitle: NumberHelper.formatHarga(penjualan.totalHarga),
                     trailing: DateHelper.formatTanggal(
                       penjualan.tanggalTransaksi,
                     ),

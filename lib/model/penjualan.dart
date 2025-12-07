@@ -12,4 +12,11 @@ class Penjualan {
     required this.totalHarga,
     required this.jumlahBayar,
   }) : tanggalTransaksi = tanggalTransaksi ?? DateTime.now();
+
+  String get kodePenjualan {
+    final year = tanggalTransaksi.year;
+    final month = tanggalTransaksi.month.toString().padLeft(2, '0');
+    final day = tanggalTransaksi.day.toString().padLeft(2, '0');
+    return 'PNJ-$year$month$day-${id ?? 0}';
+  }
 }
