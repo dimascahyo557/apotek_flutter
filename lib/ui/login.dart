@@ -39,10 +39,20 @@ class _LoginState extends State<Login> {
         _emailController.text,
       );
 
-      if (pengguna == null || pengguna.password != _passwordController.text) {
+      if (pengguna == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Email atau kata sandi salah'),
+            content: Text('Email tidak ditemukan'),
+            backgroundColor: Variables.colorDanger,
+          ),
+        );
+        return;
+      }
+
+      if (pengguna.password != _passwordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Kata sandi salah'),
             backgroundColor: Variables.colorDanger,
           ),
         );
@@ -122,6 +132,11 @@ class _LoginState extends State<Login> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Email tidak boleh kosong';
+                          }
+                          if (!RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(value)) {
+                            return 'Email tidak valid';
                           }
                           return null;
                         },
