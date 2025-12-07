@@ -80,7 +80,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void setState(VoidCallback fn) {
-    _isWidgetRebuilt = true;
+    if (mounted && !_isWidgetRebuilt) {
+      _isWidgetRebuilt = true;
+    }
     super.setState(fn);
   }
 

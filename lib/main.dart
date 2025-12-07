@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
       title: 'Obatin App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Nunito',
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Color(0xFF444444)),
           bodyMedium: TextStyle(color: Color(0xFF444444)),
