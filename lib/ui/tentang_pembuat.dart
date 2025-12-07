@@ -137,7 +137,7 @@ class _TentangPembuatState extends State<TentangPembuat> {
                                 ),
                               ),
                               Text(
-                                '${_authors[_currentIndex]['role']} Kelompok 1',
+                                '${_authors[_currentIndex]['role']} Kelompok 2',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 20,
